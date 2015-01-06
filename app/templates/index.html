@@ -6,13 +6,17 @@
   </head>
   <body>
     <div ng-controller="GraderController">
-      <li ng-repeat="assignment in assignments">
-      <span class="word" ng-repeat="word in assignment" ng-click="wordClicked()">
+      <p class="assignment" ng-repeat="assignment in assignments">
+      <span class="word" ng-repeat="word in assignment"
+        ng-click="wordClicked(word)">
         {{word}}
       </span>
-      </li>
+      </p>
+      Correct {{word}}</br>
+      <input type="text" focus="focusGradeBox"></input>
     </div>
     <script src="../static/lib/angular.min.js"></script>
-    <script src="../static/js/grade.js"></script>
+    <script src="../static/js/app.js"></script>
+    <script src="../static/js/directives.js"></script>
   </body>
 </html>

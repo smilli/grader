@@ -1,4 +1,8 @@
+body {
+  font-family: "Helvetica";
+}
+
 .word:hover {
-  background-color: yellow;
+  background-color: #A9D0F5;
   cursor: pointer
 }
