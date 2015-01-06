@@ -12,15 +12,18 @@
     </div>
     <div class="row">
       <div class="assignment bs-callout bs-callout-default" ng-repeat="assignment in assignments">
-      <span class="word" ng-repeat="word in assignment"
+      <span ng-repeat="word in assignment"
         ng-click="wordClicked(word)">
-        {{word}}
+        <span class="word" ng-class="{'strike-through': !word.correct, 'highlight': word.selected}">{{word.text}}</span>
+        {{word.correction}}
       </span>
       </div>
     </div>
     <div class="row text-center">
-      Correct {{word}}</br>
-      <input type="text" focus="focusGradeBox"></input>
+      Correct <span class="highlight">{{word.text}}</span> to {{correctTo}}</br>
+      <form ng-submit="submit()">
+        <input type="text" focus="focusGradeBox" ng-model="correctTo"></input>
+      </form>
     </div>
 
 

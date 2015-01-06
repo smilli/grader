@@ -58,3 +58,10 @@
   background-color: #A9D0F5;
   cursor: pointer
 }
+.highlight {
+  background-color: #A9D0F5;
+}
+.strike-through {
+  text-decoration: line-through;
+  color: red;
+}
