@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html ng-app="graderApp">
+  <head>
+    <title>Demo</title>
+    <link rel="stylesheet" href="../static/css/main.css"/>
+  </head>
+  <body>
+    <div ng-controller="GraderController">
+      <li ng-repeat="assignment in assignments">
+      <span class="word" ng-repeat="word in assignment" ng-click="wordClicked()">
+        {{word}}
+      </span>
+      </li>
+    </div>
+    <script src="../static/lib/angular.min.js"></script>
+    <script src="../static/js/grade.js"></script>
+  </body>
+</html>
