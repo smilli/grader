@@ -40,6 +40,7 @@ var app = angular.module('graderApp', [])
       if ($scope.word) {
         $scope.word.correct = false;
         $scope.word.correction = $scope.correctTo;
+        $scope.word.selected = false;
         $scope.correctTo = '';
       }
     }
