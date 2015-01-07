@@ -46,7 +46,6 @@ class MulticlassPerceptron():
                         incorrect_feats)]
                     clf.update_weights(weight_changes)
 
-
     def predict(self, data_feats, pos_target_names):
         """
         Return list of predictions for given data.
@@ -59,9 +58,7 @@ class MulticlassPerceptron():
             mapping of features.
         """
         predictions = []
-        for (feats, pos_target_names) in zip(
-                self.training_feats, self.pos_target_names,
-                self.correct_targets):
+        for (feats, pos_target_names) in zip(data_feats, pos_target_names):
             all_preds = self.clf.predict(feats)
             pred_ind = max(enumerate(all_preds), key=lambda x: x[1])[0]
             predictions.append(pos_target_names[pred_ind])
@@ -94,19 +91,25 @@ class BinaryPerceptron():
 
     def predict(self, data_feats):
         """
-        Returns list of list of scores.
+        Returns list of scores for list of features.
 
         Params:
-        data_feats (dict{feature_name: value}[][]) - list of list of features
+        data_feats (dict{feature_name: value}[]) - list of list of features
             for each possible target
         """
+        print(data_feats)
+        scores = []
         for feats in data_feats:
-            return [predict(feat) for feat in feats]
+            feature_vals = self.feature_dict_to_list(feats)
+            score = sum(v*w for v, w in zip(feature_vals, self.feature_weights))
+            scores.append(score)
+        return scores
 
-    def feature_dict_to_list(self, feat):
+    def feature_dict_to_list(self, feats):
         feature_values = [0] * self.num_features
         for name, value in feats.items():
             feature_values[self.features_to_ind[name]] = value
+        return feature_values
 
     def _predict(self, feats):
         """
@@ -115,5 +118,5 @@ class BinaryPerceptron():
         Params:
         feats (dict{feature_name: value}) - dict of feature name & value pairs
         """
-        feature_vals = feature_dict_to_list(self, feat)
-        return sum(v*w for v, w in zip(feature_vals, feature_weights))
+        feature_vals = self.feature_dict_to_list(feats)
+        return sum(v*w for v, w in zip(feature_vals, self.feature_weights))
