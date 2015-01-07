@@ -1,12 +1,21 @@
 from flask import Flask, jsonify, make_response
 import json
+from spellcheck import SpellChecker
+
+
 app = Flask(__name__)
+assignments = [
+    'This is a student\'s alsignment',
+    'This is another student\'s assignment'
+]
+spellchecker = SpellChecker(assignments)
 
 
-def create_word(word_text, correction=None):
+def create_word(word_text):
     word = {}
     word['text'] = word_text
-    if correction:
+    correction = spellchecker.correct(word_text)
+    if correction != word_text:
         word['correction'] = correction
         word['correct'] = False
     else:
@@ -23,10 +32,6 @@ def main():
 
 @app.route('/assignments', methods=['GET', 'POST'])
 def get_assignments():
-    assignments = [
-        'This is a student\'s assignment',
-        'This is another student\'s assignment'
-    ]
     data = []
     for assignment in assignments:
         words = assignment.split()
