@@ -30,8 +30,10 @@ def get_assignments():
     data = []
     for assignment in assignments:
         words = assignment.split()
+        data_assignment = []
         for word in words:
-            data.append(create_word(word))
+            data_assignment.append(create_word(word))
+        data.append(data_assignment)
     return json.dumps(data)
 
 
