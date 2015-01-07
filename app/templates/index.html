@@ -14,8 +14,10 @@
       <div class="assignment bs-callout bs-callout-default" ng-repeat="assignment in assignments">
       <span ng-repeat="word in assignment"
         ng-click="wordClicked(word)">
-        <span class="word" ng-class="{'strike-through': !word.correct, 'highlight': word.selected}">{{word.text}}</span>
-        {{word.correction}}
+        <span class="word" ng-class="{'strike-through': !word.correct && !hover,
+          'highlight': word.selected}" ng-mouseover="hover = true"
+        ng-mouseleave="hover = false">{{word.text}}</span>
+      <span ng-hide="hover"> {{word.correction}}</span>
       </span>
       </div>
     </div>

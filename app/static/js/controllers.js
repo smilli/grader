@@ -1,6 +1,5 @@
 app.controller('GraderController', ['$scope', 'server', function($scope, server) {
     server.getAssignments().then(function(assignments) {
-      console.log(assignments);
       $scope.assignments = assignments;
     });
     $scope.focusGradeBox = false;
@@ -8,6 +7,11 @@ app.controller('GraderController', ['$scope', 'server', function($scope, server)
     $scope.correctTo = '';
 
     $scope.wordClicked = function(word) {
+      if (!word.correct) {
+        word.correct = true;
+        word.correction = '';
+        return;
+      }
       if ($scope.word) {
         $scope.word.selected = false;
       }
