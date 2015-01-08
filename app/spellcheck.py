@@ -66,26 +66,30 @@ class SpellChecker():
         return set(w for w in words if w and
                 (w in self.corpus_freqs or self.eng_dict.check(w)))
 
-    def correct(self, word, prev_word=None, next_word=None):
+    def correct(self, word):
         """Returns a corrected version of misspelled word"""
         if self._should_check_word(word):
-            edit1_cands = self._known(self._calc_edits1(word))
-            edit2_cands = self._known(self._calc_edits2(word))
-            features_list = []
-            corrections = []
-            for edit1 in edit1_cands:
-                features_list.append({'IsEdit1': 1, 'IsEdit2': 0})
-                corrections.append(edit1)
-            for edit2 in edit2_cands:
-                features_list.append({'IsEdit1': 0, 'IsEdit2': 1})
-                corrections.append(edit2)
-            self.add_feats(word, features_list, corrections)
+            features_list, corrections = self._get_pos_correction_feats(word)
             return self.clf.predict([features_list], [corrections])[0]
             #return max(candidates, key=lambda x: self.corpus_freqs.get(x) if
             #        self.corpus_freqs.get(x) else 0)
         return word
 
-    def add_feats(self, word, features_list, corrections):
+    def _get_pos_correction_feats(self, word):
+        edit1_cands = self._known(self._calc_edits1(word))
+        edit2_cands = self._known(self._calc_edits2(word))
+        features_list = []
+        corrections = []
+        for edit1 in edit1_cands:
+            features_list.append({'IsEdit1': 1, 'IsEdit2': 0})
+            corrections.append(edit1)
+        for edit2 in edit2_cands:
+            features_list.append({'IsEdit1': 0, 'IsEdit2': 1})
+            corrections.append(edit2)
+        self._add_feats(word, features_list, corrections)
+        return [features_list, corrections]
+
+    def _add_feats(self, word, features_list, corrections):
         """
         Adds the non-edit features to the list of possible corrections
 
@@ -114,3 +118,24 @@ class SpellChecker():
         # letter (prob acronyms or some weird words)
         return (self._is_valid_word(word) and not (self.eng_dict.check(word)
                 or self.eng_dict.check(word.lower())))
+
+    def grade(self, words, corrections, teacher_corrected_list):
+        training_feats = []
+        pos_target_names_list = []
+        for word, correct, teacher_corrected in zip(words, corrections,
+                teacher_corrected_list):
+            if teacher_corrected:
+                self.add_correction(word, correct)
+            # TODO(smilli): should check to see if word was corrected in first place
+            features_list, pos_target_names = self._get_pos_correction_feats(word)
+            try:
+                correctInd = corrections.index(correct)    
+                features_list[correctInd]['IsTeacherCorrection'] = teacher_corrected
+            except ValueError:
+                features = {'IsEdit1': 0, 'IsEdit2': 0}
+                self._add_feats(features)
+                features_list.append(features)
+                pos_target_names.append(correct)
+            training_feats.append(features_list)
+            pos_target_names_list.append(pos_target_names)
+        self.clf.train(training_feats, pos_target_names_list, corrections)

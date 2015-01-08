@@ -17,7 +17,10 @@
         <span class="word" ng-class="{'strike-through': !word.correct && !hover,
           'highlight': word.selected}" ng-mouseover="hover = true"
         ng-mouseleave="hover = false">{{word.text}}</span>
-      <span ng-hide="hover"> {{word.correction}}</span>
+      <span ng-hide="hover" ng-switch="word.teacherCorrection"> 
+        <span ng-switch-when="false">{{word.correction}}</span>
+        <span ng-switch-default>{{word.teacherCorrection}}</span>
+      </span>
       </span>
       </div>
       <nav>

@@ -25,26 +25,38 @@ class MulticlassPerceptron():
         correct_targets (string[]) - The correct target for each test.
         num_iter (int) - The number of times to do the training.
         """
-        self.training_feats.extend(training_feats)
+        # assumes train is only called once for each piece of
+        # training data
+        print(training_feats)
+        new_training_feats = []
+        for test_feats in training_feats:
+            new_feats = []
+            for feats in test_feats:
+                new_feats.append(self.clf.feature_dict_to_list(feats))
+            new_training_feats.append(new_feats)
+        self.training_feats.extend(new_training_feats)
         self.pos_target_names.extend(pos_target_names)
         self.correct_targets.extend(correct_targets)
         self._train(num_iter)
 
     def _train(self, num_iter=5):
         for _ in range(num_iter):
+            print('Training feats')
+            print(self.training_feats)
             for (feats, pos_target_names, correct_target) in zip(
                     self.training_feats, self.pos_target_names,
                     self.correct_targets):
-                correct_ind = post_target_names.index(correct_target)
+                correct_ind = pos_target_names.index(correct_target)
                 assert (correct_ind > -1)
                 all_preds = self.clf.predict(feats)
                 pred_ind = max(enumerate(all_preds), key=lambda x: x[1])[0]
                 if pred_ind != correct_ind:
                     incorrect_feats = feats[pred_ind]
                     correct_feats = feats[correct_ind]
+                    print(incorrect_feats, correct_feats)
                     weight_changes = [c - i for c, i in zip(correct_feats,
                         incorrect_feats)]
-                    clf.update_weights(weight_changes)
+                    self.clf.update_weights(weight_changes)
 
     def predict(self, data_feats, pos_target_names):
         """
@@ -59,6 +71,7 @@ class MulticlassPerceptron():
         """
         predictions = []
         for (feats, pos_target_names) in zip(data_feats, pos_target_names):
+            feats = [self.clf.feature_dict_to_list(f) for f in feats]
             all_preds = self.clf.predict(feats)
             pred_ind = max(enumerate(all_preds), key=lambda x: x[1])[0]
             predictions.append(pos_target_names[pred_ind])
@@ -87,20 +100,19 @@ class BinaryPerceptron():
         Params:
         weight_changes (int[]) - the list of changes to add to each weight
         """
-        self.weights = [w + c for w, c in zip(self.weights, weight_changes)]
+        self.feature_weights = [w + c for w, c in 
+                zip(self.feature_weights, weight_changes)]
 
     def predict(self, data_feats):
         """
         Returns list of scores for list of features.
 
         Params:
-        data_feats (dict{feature_name: value}[]) - list of list of features
-            for each possible target
+        data_feats (int[[]]) - list of list of features for each possible target
         """
         print(data_feats)
         scores = []
-        for feats in data_feats:
-            feature_vals = self.feature_dict_to_list(feats)
+        for feature_vals in data_feats:
             score = sum(v*w for v, w in zip(feature_vals, self.feature_weights))
             scores.append(score)
         return scores

@@ -5,6 +5,11 @@ app.factory('server', function($http) {
               .then(function(result) {
                 return result.data;
               });
+    },
+    gradeAssignment: function(id, assignment) {
+      console.log(assignment)
+      return $http.post('/grade/' + id, 
+        {assignment: assignment})
     }
   }
 });

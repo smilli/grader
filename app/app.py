@@ -1,12 +1,12 @@
-from flask import Flask, jsonify, make_response
+from flask import Flask, jsonify, make_response, request
 import json
 from spellcheck import SpellChecker
 
 
 app = Flask(__name__)
 assignments = [
-    'This is a student\'s alsignment',
-    'This is another student\'s assignment',
+    'This is a stud\'s alsignment',
+    'This is another student\'s alsignment',
     'I like to eat chese.',
     'My favrie type of food is pata.'
 ]
@@ -25,6 +25,7 @@ def create_word(word_text):
         word['correction'] = ''
         word['correct'] = True
     word['selected'] = False
+    word['teacherCorrection'] = False
     return word
 
 
@@ -33,7 +34,7 @@ def main():
     return make_response(open('templates/index.html').read())
 
 
-@app.route('/assignments/<int:id>', methods=['GET', 'POST'])
+@app.route('/assignments/<int:id>', methods=['POST'])
 def get_assignments(id):
     if id < len(assignments) and id >= 0:
         assignment = assignments[id]
@@ -42,11 +43,27 @@ def get_assignments(id):
     return 'false'
 
 
-@app.route('/grade/<int:id>', methods=['GET', 'POST'])
+@app.route('/grade/<int:id>', methods=['POST'])
 def grade_assignment(id):
     if id < len(assignments) and id >= 0:
-        return None
-    return None
+        assignment = request.json['assignment']
+        print(assignment)
+        words = []
+        corrections = []
+        teacher_corrected_list = []
+        for w in assignment:
+            if not w['correct']:
+                words.append(w['text'])
+                is_teach_corrected = w['teacherCorrection'] != False
+                teacher_corrected_list.append(is_teach_corrected)
+                if is_teach_corrected:
+                    corrections.append(w['teacherCorrection'])
+                else:
+                    corrections.append(w['correction'])
+        print(words, corrections, teacher_corrected_list)
+        spellchecker.grade(words, corrections, teacher_corrected_list)
+        return 'true'
+    return 'false'
 
 
 if __name__ == '__main__':

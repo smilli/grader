@@ -10,7 +10,7 @@ app.controller('GraderController', ['$scope', 'server', function($scope, server)
     $scope.wordClicked = function(word) {
       if (!word.correct) {
         word.correct = true;
-        word.correction = '';
+        word.teacherCorrection = '';
         return;
       }
       if ($scope.word) {
@@ -24,7 +24,7 @@ app.controller('GraderController', ['$scope', 'server', function($scope, server)
     $scope.submit = function() {
       if ($scope.word) {
         $scope.word.correct = false;
-        $scope.word.correction = $scope.correctTo;
+        $scope.word.teacherCorrection = $scope.correctTo;
         $scope.word.selected = false;
         $scope.correctTo = '';
       }
@@ -33,7 +33,7 @@ app.controller('GraderController', ['$scope', 'server', function($scope, server)
     $scope.newAssignment = function(offset) {
       if ($scope.assignmentId + offset > 0) {
         $scope.assignmentId += offset
-        //server.gradeAssignment();
+        server.gradeAssignment($scope.assignmentId, $scope.assignment);
         server.getAssignments($scope.assignmentId).then(function(assignment) {
           // TODO(smilli): make sure you get an assignment back
           // actually just add len of assignments to scope
