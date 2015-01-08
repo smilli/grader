@@ -11,7 +11,7 @@
       <h1>Grader Demo</h1>
     </div>
     <div class="row">
-      <div class="assignment bs-callout bs-callout-default" ng-repeat="assignment in assignments">
+      <div class="assignment bs-callout bs-callout-default">
       <span ng-repeat="word in assignment"
         ng-click="wordClicked(word)">
         <span class="word" ng-class="{'strike-through': !word.correct && !hover,
@@ -20,6 +20,12 @@
       <span ng-hide="hover"> {{word.correction}}</span>
       </span>
       </div>
+      <nav>
+        <ul class="pager">
+          <li class="previous"><a href="#" ng-click="newAssignment(-1)"><span aria-hidden="true">&larr;</span>Previous</a></li>
+          <li class="next"><a href="#" ng-click="newAssignment(1)">Next<span aria-hidden="true">&rarr;</span></a></li>
+        </ul>
+      </nav>
     </div>
     <div class="row text-center">
       Correct <span class="highlight">{{word.text}}</span> to {{correctTo}}</br>

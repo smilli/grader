@@ -6,9 +6,12 @@ from spellcheck import SpellChecker
 app = Flask(__name__)
 assignments = [
     'This is a student\'s alsignment',
-    'This is another student\'s assignment'
+    'This is another student\'s assignment',
+    'I like to eat chese.',
+    'My favrie type of food is pata.'
 ]
-spellchecker = SpellChecker(assignments)
+problem = 'What is your favorite type of food?'
+spellchecker = SpellChecker(assignments, problem)
 
 
 def create_word(word_text):
@@ -30,16 +33,20 @@ def main():
     return make_response(open('templates/index.html').read())
 
 
-@app.route('/assignments', methods=['GET', 'POST'])
-def get_assignments():
-    data = []
-    for assignment in assignments:
+@app.route('/assignments/<int:id>', methods=['GET', 'POST'])
+def get_assignments(id):
+    if id < len(assignments) and id >= 0:
+        assignment = assignments[id]
         words = assignment.split()
-        data_assignment = []
-        for word in words:
-            data_assignment.append(create_word(word))
-        data.append(data_assignment)
-    return json.dumps(data)
+        return json.dumps([create_word(word) for word in words])
+    return 'false'
+
+
+@app.route('/grade/<int:id>', methods=['GET', 'POST'])
+def grade_assignment(id):
+    if id < len(assignments) and id >= 0:
+        return None
+    return None
 
 
 if __name__ == '__main__':
