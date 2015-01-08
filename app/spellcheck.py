@@ -25,7 +25,7 @@ class SpellChecker():
             self.problem = problem.split()
         else:
             self.problem = []
-        self.features = ['CorpFreq', 'ImpWord', 'IsEdit1', 'IsEdit2', 
+        self.features = ['CorpFreq', 'ImpWord', 'IsEdit1', 'IsEdit2',
                 'IsTeacherCorrection', 'InProblem']
         self.clf = MulticlassPerceptron(self.features)
 
@@ -95,8 +95,8 @@ class SpellChecker():
 
         Params:
         word (string) - Word to be corrected.
-        features_list (dict{}[]) - List of possible corrections.  
-            Each possible correction is a dict that already has IsEdit1 and 
+        features_list (dict{}[]) - List of possible corrections.
+            Each possible correction is a dict that already has IsEdit1 and
             IsEdit2 set.
         corrections (string[]) - List of corrections corresponding to each
             feature.
@@ -129,13 +129,14 @@ class SpellChecker():
             # TODO(smilli): should check to see if word was corrected in first place
             features_list, pos_target_names = self._get_pos_correction_feats(word)
             try:
-                correctInd = corrections.index(correct)    
+                correctInd = pos_target_names.index(correct)
                 features_list[correctInd]['IsTeacherCorrection'] = teacher_corrected
             except ValueError:
                 features = {'IsEdit1': 0, 'IsEdit2': 0}
-                self._add_feats(features)
+                self._add_feats(word, [features], [correct])
                 features_list.append(features)
                 pos_target_names.append(correct)
             training_feats.append(features_list)
             pos_target_names_list.append(pos_target_names)
+        print(training_feats, pos_target_names_list, corrections)
         self.clf.train(training_feats, pos_target_names_list, corrections)

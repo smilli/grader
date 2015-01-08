@@ -47,7 +47,6 @@ def get_assignments(id):
 def grade_assignment(id):
     if id < len(assignments) and id >= 0:
         assignment = request.json['assignment']
-        print(assignment)
         words = []
         corrections = []
         teacher_corrected_list = []
