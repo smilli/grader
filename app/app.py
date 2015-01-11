@@ -15,18 +15,14 @@ spellchecker = SpellChecker(assignments, problem)
 
 
 def create_word(word_text):
-    word = {}
-    word['text'] = word_text
     correction = spellchecker.correct(word_text)
-    if correction != word_text:
-        word['correction'] = correction
-        word['correct'] = False
-    else:
-        word['correction'] = ''
-        word['correct'] = True
-    word['selected'] = False
-    word['teacherCorrection'] = False
-    return word
+    return {
+        'text': word_text,
+        'selected': False,
+        'teacherCorrection': False,
+        'correction': correction if correction != word_text else '',
+        'correct': correction == word_text
+    }
 
 
 @app.route('/')
@@ -36,16 +32,14 @@ def main():
 
 @app.route('/assignments/<int:id>', methods=['POST'])
 def get_assignments(id):
-    if id < len(assignments) and id >= 0:
-        assignment = assignments[id]
-        words = assignment.split()
-        return json.dumps([create_word(word) for word in words])
+    if 0 <= id < len(assignments):
+        return json.dumps([create_word(word) for word in assignments[id].split()])
     return 'false'
 
 
 @app.route('/grade/<int:id>', methods=['POST'])
 def grade_assignment(id):
-    if id < len(assignments) and id >= 0:
+    if 0 <= id < len(assignments):
         assignment = request.json['assignment']
         words = []
         corrections = []
