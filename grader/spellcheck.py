@@ -2,8 +2,8 @@ import nltk
 import string
 from nltk.util import ngrams
 from nltk.corpus import gutenberg
+from nltk.corpus import words
 from collections import Counter, defaultdict
-import enchant
 from perceptron import MulticlassPerceptron
 
 class SpellChecker():
@@ -16,7 +16,7 @@ class SpellChecker():
         documents (String[]) - a list of documents that will later be spell
             checked
         """
-        self.eng_dict = enchant.Dict("en_GB")
+        self.eng_dict = set(words.words())
         self.corpus_freqs = nltk.FreqDist([word.lower() for word in gutenberg.words()])
         self.imp_words = self.get_imp_words(documents)
         self.teacher_corrections = defaultdict(int)
@@ -64,7 +64,7 @@ class SpellChecker():
 
     def _known(self, words):
         return set(w for w in words if w and
-                (w in self.corpus_freqs or self.eng_dict.check(w)))
+                (w in self.corpus_freqs or w in self.eng_dict))
 
     def correct(self, word):
         """Returns a corrected version of misspelled word"""
@@ -116,8 +116,8 @@ class SpellChecker():
         """Returns true if word should be checked for spelling"""
         # don't correct anything that has digits or capital letters beyond 1st
         # letter (prob acronyms or some weird words)
-        return (self._is_valid_word(word) and not (self.eng_dict.check(word)
-                or self.eng_dict.check(word.lower())))
+        return (self._is_valid_word(word) and not (word in self.eng_dict
+                or word.lower() in self.eng_dict))
 
     def grade(self, words, corrections, teacher_corrected_list):
         training_feats = []
