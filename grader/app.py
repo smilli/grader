@@ -2,7 +2,6 @@ from flask import Flask, jsonify, make_response, request
 import json
 from spellcheck import SpellChecker
 
-
 app = Flask(__name__)
 assignments = [
     'This is a stud\'s alsignment',
