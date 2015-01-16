@@ -2,6 +2,7 @@ import nltk
 import string
 from nltk.util import ngrams
 from nltk.corpus import gutenberg
+nltk.download('words')
 from nltk.corpus import words
 from collections import Counter, defaultdict
 from perceptron import MulticlassPerceptron
