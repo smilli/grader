@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, make_response, request
 import json
 from spellcheck import SpellChecker
+from nltk.tokenize import word_tokenize
 
 app = Flask(__name__)
 assignments = [
@@ -32,7 +33,7 @@ def main():
 @app.route('/assignments/<int:id>', methods=['POST'])
 def get_assignments(id):
     if 0 <= id < len(assignments):
-        return json.dumps([create_word(word) for word in assignments[id].split()])
+        return json.dumps([create_word(word) for word in word_tokenize(assignments[id])])
     return 'false'
 
 

@@ -2,8 +2,8 @@ import nltk
 import string
 from nltk.util import ngrams
 from nltk.corpus import gutenberg
-nltk.download('words')
 from nltk.corpus import words
+from nltk.tokenize import word_tokenize
 from collections import Counter, defaultdict
 from perceptron import MulticlassPerceptron
 
@@ -21,9 +21,8 @@ class SpellChecker():
         self.corpus_freqs = nltk.FreqDist([word.lower() for word in gutenberg.words()])
         self.imp_words = self.get_imp_words(documents)
         self.teacher_corrections = defaultdict(int)
-        # TODO(smilli): tokenize using nltk
         if problem:
-            self.problem = problem.split()
+            self.problem = word_tokenize(problem)
         else:
             self.problem = []
         self.features = ['CorpFreq', 'ImpWord', 'IsEdit1', 'IsEdit2',
@@ -139,7 +138,6 @@ class SpellChecker():
                 pos_target_names.append(correct)
             training_feats.append(features_list)
             pos_target_names_list.append(pos_target_names)
-        print(training_feats, pos_target_names_list, corrections)
         self.clf.train(training_feats, pos_target_names_list, corrections)
 
     def reset(self):
