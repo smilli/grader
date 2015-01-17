@@ -74,6 +74,12 @@ class MulticlassPerceptron():
             predictions.append(pos_target_names[pred_ind])
         return predictions
 
+    def reset(self):
+        self.clf.reset()
+        self.training_feats = []
+        self.pos_target_names = []
+        self.correct_targets = []
+
 
 class BinaryPerceptron():
 
@@ -128,3 +134,8 @@ class BinaryPerceptron():
         """
         feature_vals = self.feature_dict_to_list(feats)
         return sum(v*w for v, w in zip(feature_vals, self.feature_weights))
+
+    def reset(self):
+        self.feature_weights = [0] * self.num_features
+        self.training_data = []
+        self.training_targets = []

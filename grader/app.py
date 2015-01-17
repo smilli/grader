@@ -52,10 +52,15 @@ def grade_assignment(id):
                     corrections.append(w['teacherCorrection'])
                 else:
                     corrections.append(w['correction'])
-        print(words, corrections, teacher_corrected_list)
         spellchecker.grade(words, corrections, teacher_corrected_list)
         return 'true'
     return 'false'
+
+
+@app.route('/reset/', methods=['POST'])
+def reset():
+    spellchecker.reset()
+    return 'true'
 
 
 if __name__ == '__main__':

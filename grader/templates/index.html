@@ -11,13 +11,17 @@
       <h1>Grader Demo</h1>
     </div>
     <div class="row">
+      <button type="button" class="btn btn-default" ng-click="reset()">
+          <span class="glyphicon glyphicon-repeat" aria-hidden="true"></span>
+          Reset
+      </button>
       <div class="assignment bs-callout bs-callout-default">
       <span ng-repeat="word in assignment"
         ng-click="wordClicked(word)">
         <span class="word" ng-class="{'strike-through': !word.correct && !hover,
           'highlight': word.selected}" ng-mouseover="hover = true"
         ng-mouseleave="hover = false">{{word.text}}</span>
-      <span ng-hide="hover" ng-switch="word.teacherCorrection"> 
+      <span ng-hide="hover" ng-switch="word.teacherCorrection">
         <span ng-switch-when="false">{{word.correction}}</span>
         <span ng-switch-default>{{word.teacherCorrection}}</span>
       </span>

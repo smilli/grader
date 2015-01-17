@@ -141,3 +141,6 @@ class SpellChecker():
             pos_target_names_list.append(pos_target_names)
         print(training_feats, pos_target_names_list, corrections)
         self.clf.train(training_feats, pos_target_names_list, corrections)
+
+    def reset(self):
+        self.clf.reset()
