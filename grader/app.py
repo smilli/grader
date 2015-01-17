@@ -63,6 +63,10 @@ def reset():
     spellchecker.reset()
     return 'true'
 
+@app.route('/num-assignments/', methods=['POST'])
+def num_assignments():
+   return str(len(assignments))
+
 
 if __name__ == '__main__':
     app.run(debug=True)

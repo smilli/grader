@@ -12,6 +12,9 @@ app.factory('server', function($http) {
     },
     reset: function() {
       return $http.post('/reset/');
+    },
+    getNumAssignments: function() {
+      return $http.post('/num-assignments/');
     }
   }
 });

@@ -3,6 +3,14 @@ app.controller('GraderController', ['$scope', 'server', function($scope, server)
     server.getAssignment($scope.assignmentId).then(function(assignment) {
       $scope.assignment = assignment;
     });
+    server.getNumAssignments().then(function(resp) {
+      $scope.numAssignments = parseInt(resp.data, 10);
+    });
+
+    $scope.getNumber = function(num) {
+      return new Array(num);
+    }
+
     $scope.focusGradeBox = false;
     $scope.word = null;
     $scope.correctTo = '';
@@ -33,25 +41,26 @@ app.controller('GraderController', ['$scope', 'server', function($scope, server)
     $scope.newAssignment = function(offset) {
       if ($scope.assignmentId + offset >= 0) {
         server.gradeAssignment($scope.assignmentId, $scope.assignment);
-        updateAssignment($scope.assignmentId + offset);
+        $scope.updateAssignment($scope.assignmentId + offset);
       }
     }
-    
-    updateAssignment = function(id) {
-      $scope.assignmentId = id;
-      server.getAssignment(id).then(function(assignment) {
-        // TODO(smilli): make sure you get an assignment back
-        // actually just add len of assignments to scope
-        $scope.assignment = assignment;
-      });
-      $scope.focusGradeBox = false;
-      $scope.word = null;
-      $scope.correctTo = '';
+
+    $scope.updateAssignment = function(id) {
+      if (id >= 0 && id < $scope.numAssignments) {
+        $scope.assignmentId = id;
+        server.getAssignment(id).then(function(assignment) {
+          // TODO(smilli): make sure you get an assignment back
+          // actually just add len of assignments to scope
+          $scope.assignment = assignment;
+        });
+        $scope.focusGradeBox = false;
+        $scope.word = null;
+        $scope.correctTo = '';
+      }
     }
 
     $scope.reset = function() {
       server.reset();
-      $scope.assignmentId = 0
-      updateAssignment(0);
+      $scope.updateAssignment(0);
     }
   }])
