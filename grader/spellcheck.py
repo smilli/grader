@@ -18,16 +18,17 @@ class SpellChecker():
         """
         self.eng_dict = set(words.words())
         self.corpus_freqs = nltk.FreqDist([word.lower() for word in gutenberg.words()])
+        self.corpus_size = len(gutenberg.words())
         self.imp_words = self.get_imp_words(assignment.answers)
         self.teacher_corrections = defaultdict(int)
         if assignment:
             self.problem = word_tokenize(assignment.prompt)
         else:
             self.problem = []
-        self.features = ['InDict', 'CorpFreq', 'KnownWord', 
+        self.features = ['InDict', 'CorpFreq', 'KnownWord',
                 'ImpWord', 'IsEdit1', 'IsEdit2',
                 'IsTeacherCorrection', 'InProblem']
-        self.weights = [20, 2, 200, 5, 5, 2, 25, 10]
+        self.weights = [20, 2, 200, 5, 5, 2, 40, 10]
         self.clf = MulticlassPerceptron(self.features, self.weights)
 
     def add_correction(self, word, corrected):
@@ -46,7 +47,16 @@ class SpellChecker():
         documents (String[]) - a list of documents that will later be spell
             checked
         """
-        #TODO(smilli)
+        # TODO(smilli): make this useful
+        #d_words = []
+        #for d in documents:
+        #    d_words += word_tokenize(d)
+        #d_words_freq = nltk.FreqDist(d_words)
+        #imp_words = set()
+        #for w in set([w for w in d_words if w in self.eng_dict]):
+        #    if (d_words_freq[w] / len(d_words)) / ((self.corpus_freqs[w] + 1) /
+        #            self.corpus_size) > 5:
+        #        imp_words.add(w)
         return []
 
     def _calc_edits1(self, word):
@@ -134,7 +144,8 @@ class SpellChecker():
             features['InProblem'] = 1 if correction in self.problem else -1
             features['InDict'] = 1 if correction.lower() in self.eng_dict else -1
             features['KnownWord'] = 1 if (word == correction and
-                features['InDict'] and self.corpus_freqs[correction] > 20) else -1
+                features['InDict'] > 0 and (self.corpus_freqs[correction] > 20 or
+                    features['ImpWord'] > 0)) else -1
 
     def _is_valid_word(self, word):
         return word[0].isalpha() and all(letter in string.ascii_lowercase

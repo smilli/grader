@@ -8,8 +8,8 @@ app = Flask(__name__)
 assignment = Assignment(
     'What is your favorite food?',
     ['My farite food is past.  I like the tast and the txture.',
-    'This is another student\'s alsignment',
-    'I like to eat chese.',
+    'I lik all food, but my favorite is bread.',
+    'I lic to eat cheese.',
     'My favrie type of food is pata.']
 )
 spellchecker = SpellChecker(assignment)
