@@ -11,8 +11,8 @@
       <h1>Grader Demo</h1>
     </div>
     <div class="row">
-      <div class="assignment bs-callout" ng-class="{'bs-callout-success':
-        assignmentId in graded}">
+      <div class="assignment bs-callout" 
+        ng-class="{'bs-callout-success': graded[assignmentId]}">
       <span ng-repeat="word in assignment"
         ng-click="wordClicked(word)">
         <span class="word" ng-class="{'strike-through': !word.correct && !hover,
