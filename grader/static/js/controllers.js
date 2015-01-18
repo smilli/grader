@@ -60,7 +60,6 @@ app.controller('GraderController', ['$scope', 'server', function($scope, server)
         $scope.focusGradeBox = false;
         $scope.word = null;
         $scope.correctTo = '';
-        console.log($scope.assignmentGraded);
       }
     }
 

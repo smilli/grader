@@ -2,16 +2,17 @@ from flask import Flask, jsonify, make_response, request
 import json
 from spellcheck import SpellChecker
 from nltk.tokenize import word_tokenize
+from assignment import Assignment
 
 app = Flask(__name__)
-assignments = [
-    'This is a stud\'s alsignment',
+assignment = Assignment(
+    'What is your favorite food?',
+    ['This is a stud\'s alsignment',
     'This is another student\'s alsignment',
     'I like to eat chese.',
-    'My favrie type of food is pata.'
-]
-problem = 'What is your favorite type of food?'
-spellchecker = SpellChecker(assignments, problem)
+    'My favrie type of food is pata.']
+)
+spellchecker = SpellChecker(assignment)
 
 
 def create_word(word_text):
@@ -30,21 +31,22 @@ def main():
     return make_response(open('templates/index.html').read())
 
 
-@app.route('/assignments/<int:id>', methods=['POST'])
-def get_assignments(id):
-    if 0 <= id < len(assignments):
-        return json.dumps([create_word(word) for word in word_tokenize(assignments[id])])
+@app.route('/assignments/<int:ans_id>', methods=['POST'])
+def get_assignments(ans_id):
+    if 0 <= ans_id < assignment.num_answers():
+        answer = assignment.get_answer(ans_id)
+        return json.dumps([create_word(word) for word in word_tokenize(answer)])
     return 'false'
 
 
-@app.route('/grade/<int:id>', methods=['POST'])
-def grade_assignment(id):
-    if 0 <= id < len(assignments):
-        assignment = request.json['assignment']
+@app.route('/grade/<int:ans_id>', methods=['POST'])
+def grade_assignment(ans_id):
+    if 0 <= ans_id < assignment.num_answers():
+        answer = request.json['answer']
         words = []
         corrections = []
         teacher_corrected_list = []
-        for w in assignment:
+        for w in answer:
             if not w['correct']:
                 words.append(w['text'])
                 is_teach_corrected = w['teacherCorrection'] != False
@@ -65,7 +67,7 @@ def reset():
 
 @app.route('/num-assignments/', methods=['POST'])
 def num_assignments():
-   return str(len(assignments))
+   return str(assignment.num_answers())
 
 
 if __name__ == '__main__':

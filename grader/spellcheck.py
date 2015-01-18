@@ -9,20 +9,19 @@ from perceptron import MulticlassPerceptron
 
 class SpellChecker():
 
-    def __init__(self, documents=None, problem=None):
+    def __init__(self, assignment=None):
         """
         Constructor for SpellChecker.
 
         Params:
-        documents (String[]) - a list of documents that will later be spell
-            checked
+        assignment (Assignment) - Assignment obj for this assignment
         """
         self.eng_dict = set(words.words())
         self.corpus_freqs = nltk.FreqDist([word.lower() for word in gutenberg.words()])
-        self.imp_words = self.get_imp_words(documents)
+        self.imp_words = self.get_imp_words(assignment.answers)
         self.teacher_corrections = defaultdict(int)
-        if problem:
-            self.problem = word_tokenize(problem)
+        if assignment:
+            self.problem = word_tokenize(assignment.prompt)
         else:
             self.problem = []
         self.features = ['CorpFreq', 'ImpWord', 'IsEdit1', 'IsEdit2',

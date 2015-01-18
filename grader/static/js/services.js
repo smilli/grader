@@ -6,9 +6,9 @@ app.factory('server', function($http) {
                 return result.data;
               });
     },
-    gradeAssignment: function(id, assignment) {
+    gradeAssignment: function(id, answer) {
       return $http.post('/grade/' + id,
-        {assignment: assignment});
+        {answer: answer});
     },
     reset: function() {
       return $http.post('/reset/');
