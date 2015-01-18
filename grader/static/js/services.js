@@ -13,8 +13,8 @@ app.factory('server', function($http) {
     reset: function() {
       return $http.post('/reset/');
     },
-    getNumAssignments: function() {
-      return $http.post('/num-assignments/');
+    getAssignmentInfo: function() {
+      return $http.post('/assignment-info/');
     }
   }
 });

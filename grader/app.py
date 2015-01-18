@@ -72,9 +72,10 @@ def reset():
     spellchecker.reset()
     return 'true'
 
-@app.route('/num-assignments/', methods=['POST'])
-def num_assignments():
-   return str(assignment.num_answers())
+@app.route('/assignment-info/', methods=['POST'])
+def assignment_info():
+    return json.dumps({'numAnswers': str(assignment.num_answers()),
+            'prompt': assignment.prompt})
 
 
 if __name__ == '__main__':

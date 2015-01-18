@@ -4,8 +4,9 @@ app.controller('GraderController', ['$scope', 'server', function($scope, server)
       $scope.assignment = assignment.assignment;
       $scope.graded = assignment.graded;
     });
-    server.getNumAssignments().then(function(resp) {
-      $scope.numAssignments = parseInt(resp.data, 10);
+    server.getAssignmentInfo().then(function(resp) {
+      $scope.numAssignments = parseInt(resp.data.numAnswers, 10);
+      $scope.problem = resp.data.prompt;
     });
 
     $scope.getNumber = function(num) {

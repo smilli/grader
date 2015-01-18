@@ -55,6 +55,11 @@
 .bs-callout-info h4 {
     color: #5bc0de;
 }
+
+/* Grader CSS */
+.container-fluid {
+  padding: 0;
+}
 .word:hover {
   background-color: #A9D0F5;
   cursor: pointer
@@ -68,4 +73,21 @@
 }
 .pagination {
   margin: 0 0 0 10px !important;
+}
+#correct-form {
+  font-size: 16px;
+}
+.blank {
+  display: inline-block;
+  width: 100px;
+  border-bottom: 1px solid black;
+}
+#header {
+  background-color: #58ACFA;
+  color: white;
+  height: 40px;
+}
+#header span {
+  font-size: 25px;
+  float: right;
 }
