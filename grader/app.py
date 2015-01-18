@@ -68,6 +68,7 @@ def grade_assignment(ans_id):
 
 @app.route('/reset/', methods=['POST'])
 def reset():
+    assignment.graded = {}
     spellchecker.reset()
     return 'true'
 
