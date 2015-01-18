@@ -1,1 +1,1 @@
-web: sh `python -m nltk.downloader words gutenberg && cd grader && gunicorn app:app --log-file=-`
+web: sh `python -m nltk.downloader punkt words gutenberg && cd grader && gunicorn app:app --log-file=-`
