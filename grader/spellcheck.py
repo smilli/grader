@@ -24,9 +24,11 @@ class SpellChecker():
             self.problem = word_tokenize(assignment.prompt)
         else:
             self.problem = []
-        self.features = ['CorpFreq', 'ImpWord', 'IsEdit1', 'IsEdit2',
+        self.features = ['InDict', 'CorpFreq', 'KnownWord', 
+                'ImpWord', 'IsEdit1', 'IsEdit2',
                 'IsTeacherCorrection', 'InProblem']
-        self.clf = MulticlassPerceptron(self.features)
+        self.weights = [20, 2, 200, 5, 5, 2, 25, 10]
+        self.clf = MulticlassPerceptron(self.features, self.weights)
 
     def add_correction(self, word, corrected):
         """
@@ -74,49 +76,73 @@ class SpellChecker():
             #        self.corpus_freqs.get(x) else 0)
         return word
 
+    def _get_teacher_corrections(self, word):
+        return [(c, self.teacher_corrections[(w, c)]) for (w, c) in
+            self.teacher_corrections.keys() if w == word]
+
     def _get_pos_correction_feats(self, word):
         edit1_cands = self._known(self._calc_edits1(word))
         edit2_cands = self._known(self._calc_edits2(word))
         features_list = []
         corrections = []
+        features_list.append({})
+        corrections.append(word)
         for edit1 in edit1_cands:
-            features_list.append({'IsEdit1': 1, 'IsEdit2': 0})
+            features_list.append({'IsEdit1': 1})
             corrections.append(edit1)
+            for (correction, num) in self._get_teacher_corrections(edit1):
+                features_list.append({'IsTeacherCorrection': num, 'IsEdit1': 1})
+                corrections.append(correction)
         for edit2 in edit2_cands:
-            features_list.append({'IsEdit1': 0, 'IsEdit2': 1})
+            features_list.append({'IsEdit2': 1})
             corrections.append(edit2)
+            for (correction, num) in self._get_teacher_corrections(edit2):
+                features_list.append({'IsTeacherCorrection': num, 'IsEdit2': 1})
+                corrections.append(correction)
+        for (correction, num) in self._get_teacher_corrections(word):
+            features_list.append({'IsTeacherCorrection': num})
+            corrections.append(correction)
         self._add_feats(word, features_list, corrections)
+        for (c, f) in zip(corrections, features_list):
+            print(c, f)
         return [features_list, corrections]
 
     def _add_feats(self, word, features_list, corrections):
         """
-        Adds the non-edit features to the list of possible corrections
+        Adds remaining features to the list of possible corrections
 
         Params:
         word (string) - Word to be corrected.
         features_list (dict{}[]) - List of possible corrections.
-            Each possible correction is a dict that already has IsEdit1 and
-            IsEdit2 set.
+            Each possible correction is a dict that may already have IsEdit1,
+            IsEdit2, and IsTeacherCorrection set.
         corrections (string[]) - List of corrections corresponding to each
             feature.
         """
         for (features, correction) in zip(features_list, corrections):
-            features['CorpFreq'] = self.corpus_freqs[correction]
+            if 'IsEdit1' not in features:
+                features['IsEdit1'] = 0
+            if 'IsEdit2' not in features:
+                features['IsEdit2'] = 0
+            features['CorpFreq'] = (
+                1 if self.corpus_freqs[correction] > 100 else 0)
             features['ImpWord'] = 1 if correction in self.imp_words else 0
-            features['IsTeacherCorrection'] = (1 if (word, correction) in
-                self.teacher_corrections else 0)
+            if 'IsTeacherCorrection' not in features:
+                features['IsTeacherCorrection'] = (
+                        self.teacher_corrections[(word, correction)] if 
+                        (word, correction) in self.teacher_corrections else 0)
             features['InProblem'] = 1 if correction in self.problem else 0
+            features['InDict'] = 1 if correction.lower() in self.eng_dict else 0
+            features['KnownWord'] = 1 if (word == correction and
+                features['InDict'] and self.corpus_freqs[correction] > 20) else 0
 
     def _is_valid_word(self, word):
         return word[0].isalpha() and all(letter in string.ascii_lowercase
                 or letter == '-' for letter in word[1:])
 
     def _should_check_word(self, word):
-        """Returns true if word should be checked for spelling"""
-        # don't correct anything that has digits or capital letters beyond 1st
-        # letter (prob acronyms or some weird words)
-        return (self._is_valid_word(word) and not (word in self.eng_dict
-                or word.lower() in self.eng_dict))
+        return self._is_valid_word(word) and not (self.corpus_freqs[word] > 1000 or
+            self.corpus_freqs[word.lower()] > 1000)
 
     def grade(self, words, corrections, teacher_corrected_list):
         training_feats = []
@@ -131,7 +157,6 @@ class SpellChecker():
                 correctInd = pos_target_names.index(correct)
                 features_list[correctInd]['IsTeacherCorrection'] = teacher_corrected
             except ValueError:
-                features = {'IsEdit1': 0, 'IsEdit2': 0}
                 self._add_feats(word, [features], [correct])
                 features_list.append(features)
                 pos_target_names.append(correct)

@@ -1,13 +1,13 @@
 class MulticlassPerceptron():
 
-    def __init__(self, features):
+    def __init__(self, features, weights=None):
         """
         Constructor for MulticlassPerceptron
 
         Params:
         features (string[]) - list of feature names
         """
-        self.clf = BinaryPerceptron(features)
+        self.clf = BinaryPerceptron(features, weights)
         self.training_feats = []
         self.pos_target_names = []
         self.correct_targets = []
@@ -82,7 +82,7 @@ class MulticlassPerceptron():
 
 class BinaryPerceptron():
 
-    def __init__(self, features):
+    def __init__(self, features, weights=None):
         """
         Constructor for binary perceptron.
 
@@ -90,7 +90,12 @@ class BinaryPerceptron():
         features (string[]) - list of features
         """
         self.features_to_ind = dict((y, x) for x,y in enumerate(features))
-        self.feature_weights = [0] * len(features)
+        if not weights:
+            self.feature_weights = [0] * len(features)
+        else:
+            assert(len(weights) == len(features))
+            self.feature_weights = weights
+        self.start_weights = self.feature_weights
         self.num_features = len(features)
         self.training_data = []
         self.training_targets = []
@@ -135,6 +140,6 @@ class BinaryPerceptron():
         return sum(v*w for v, w in zip(feature_vals, self.feature_weights))
 
     def reset(self):
-        self.feature_weights = [0] * self.num_features
+        self.feature_weights = self.start_weights
         self.training_data = []
         self.training_targets = []

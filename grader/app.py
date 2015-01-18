@@ -7,7 +7,7 @@ from assignment import Assignment
 app = Flask(__name__)
 assignment = Assignment(
     'What is your favorite food?',
-    ['This is a stud\'s alsignment',
+    ['My farite food is past.  I like the tast and the txture.',
     'This is another student\'s alsignment',
     'I like to eat chese.',
     'My favrie type of food is pata.']
@@ -52,14 +52,16 @@ def grade_assignment(ans_id):
         corrections = []
         teacher_corrected_list = []
         for w in answer:
+            words.append(w['text'])
+            is_teach_corrected = w['teacherCorrection'] != False
+            teacher_corrected_list.append(is_teach_corrected)
             if not w['correct']:
-                words.append(w['text'])
-                is_teach_corrected = w['teacherCorrection'] != False
-                teacher_corrected_list.append(is_teach_corrected)
                 if is_teach_corrected:
                     corrections.append(w['teacherCorrection'])
                 else:
                     corrections.append(w['correction'])
+            else:
+                corrections.append(w['text'])
         spellchecker.grade(words, corrections, teacher_corrected_list)
         assignment.add_graded(ans_id, answer)
         return 'true'
