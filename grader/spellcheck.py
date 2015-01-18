@@ -73,7 +73,7 @@ class SpellChecker():
             features_list, corrections = self._get_pos_correction_feats(word)
             return self.clf.predict([features_list], [corrections])[0]
             #return max(candidates, key=lambda x: self.corpus_freqs.get(x) if
-            #        self.corpus_freqs.get(x) else 0)
+            #        self.corpus_freqs.get(x) else -1)
         return word
 
     def _get_teacher_corrections(self, word):
@@ -121,20 +121,20 @@ class SpellChecker():
         """
         for (features, correction) in zip(features_list, corrections):
             if 'IsEdit1' not in features:
-                features['IsEdit1'] = 0
+                features['IsEdit1'] = -1
             if 'IsEdit2' not in features:
-                features['IsEdit2'] = 0
+                features['IsEdit2'] = -1
             features['CorpFreq'] = (
-                1 if self.corpus_freqs[correction] > 100 else 0)
-            features['ImpWord'] = 1 if correction in self.imp_words else 0
+                1 if self.corpus_freqs[correction] > 100 else -1)
+            features['ImpWord'] = 1 if correction in self.imp_words else -1
             if 'IsTeacherCorrection' not in features:
                 features['IsTeacherCorrection'] = (
-                        self.teacher_corrections[(word, correction)] if 
-                        (word, correction) in self.teacher_corrections else 0)
-            features['InProblem'] = 1 if correction in self.problem else 0
-            features['InDict'] = 1 if correction.lower() in self.eng_dict else 0
+                        self.teacher_corrections[(word, correction)] if
+                        (word, correction) in self.teacher_corrections else -1)
+            features['InProblem'] = 1 if correction in self.problem else -1
+            features['InDict'] = 1 if correction.lower() in self.eng_dict else -1
             features['KnownWord'] = 1 if (word == correction and
-                features['InDict'] and self.corpus_freqs[correction] > 20) else 0
+                features['InDict'] and self.corpus_freqs[correction] > 20) else -1
 
     def _is_valid_word(self, word):
         return word[0].isalpha() and all(letter in string.ascii_lowercase
