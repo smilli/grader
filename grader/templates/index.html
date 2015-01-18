@@ -11,30 +11,25 @@
       <h1>Grader Demo</h1>
     </div>
     <div class="row">
-      <button type="button" class="btn btn-default" ng-click="reset()">
-          <span class="glyphicon glyphicon-repeat" aria-hidden="true"></span>
-          Reset
-      </button>
-      <div class="assignment bs-callout bs-callout-default">
+      <div class="assignment bs-callout" ng-class="{'bs-callout-success':
+        assignmentId in graded}">
       <span ng-repeat="word in assignment"
         ng-click="wordClicked(word)">
         <span class="word" ng-class="{'strike-through': !word.correct && !hover,
           'highlight': word.selected}" ng-mouseover="hover = true"
         ng-mouseleave="hover = false">{{word.text}}</span>
-      <span ng-hide="hover" ng-switch="word.teacherCorrection">
-        <span ng-switch-when="false">{{word.correction}}</span>
-        <span ng-switch-default>{{word.teacherCorrection}}</span>
-      </span>
+        <span ng-hide="hover" ng-switch="word.teacherCorrection">
+          <span ng-switch-when="false">{{word.correction}}</span>
+          <span ng-switch-default>{{word.teacherCorrection}}</span>
+        </span>
       </span>
       </div>
       <nav>
-        <ul class="pager">
-          <li class="previous"><a href="#" ng-click="newAssignment(-1)"><span aria-hidden="true">&larr;</span>Previous</a></li>
-          <li class="next"><a href="#" ng-click="newAssignment(1)">Next<span aria-hidden="true">&rarr;</span></a></li>
-        </ul>
-      </nav>
-      <nav>
-        <ul class="pagination">
+        <button type="button" class="btn btn-default pull-left" ng-click="reset()">
+            <span class="glyphicon glyphicon-repeat" aria-hidden="true"></span>
+            Reset
+        </button>
+        <ul class="pagination pull-left">
           <li ng-class="{'disabled': assignmentId == 0}"
             ng-click="updateAssignment(assignmentId - 1)">
             <a href="#" aria-label="Previous">
@@ -52,6 +47,11 @@
             </a>
           </li>
         </ul>
+        <button type="button" class="btn btn-success pull-right"
+          ng-click="gradeAssignment()">
+            <span class="glyphicon glyphicon-check" aria-hidden="true"></span>
+            Grade
+        </button>
       </nav>
     </div>
     <div class="row text-center">

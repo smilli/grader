@@ -65,3 +65,6 @@
   text-decoration: line-through;
   color: red;
 }
+.pagination {
+  margin: 0 0 0 10px !important;
+}

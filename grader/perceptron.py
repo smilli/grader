@@ -43,7 +43,6 @@ class MulticlassPerceptron():
             for (feats, pos_target_names, correct_target) in zip(
                     self.training_feats, self.pos_target_names,
                     self.correct_targets):
-                print(feats, pos_target_names, correct_target)
                 correct_ind = pos_target_names.index(correct_target)
                 all_preds = self.clf.predict(feats)
                 pred_ind = max(enumerate(all_preds), key=lambda x: x[1])[0]

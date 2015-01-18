@@ -1,5 +1,6 @@
 app.controller('GraderController', ['$scope', 'server', function($scope, server) {
     $scope.assignmentId = 0
+    $scope.graded = {} // dict with ids that have been graded already
     server.getAssignment($scope.assignmentId).then(function(assignment) {
       $scope.assignment = assignment;
     });
@@ -38,10 +39,13 @@ app.controller('GraderController', ['$scope', 'server', function($scope, server)
       }
     }
 
-    $scope.newAssignment = function(offset) {
-      if ($scope.assignmentId + offset >= 0) {
+    $scope.gradeAssignment = function() {
+      if (!($scope.assignmentId in $scope.graded)) {
+        $scope.graded[$scope.assignmentId] = true;
         server.gradeAssignment($scope.assignmentId, $scope.assignment);
-        $scope.updateAssignment($scope.assignmentId + offset);
+        $scope.updateAssignment($scope.assignmentId + 1);
+      } else {
+        // TODO(smilli): show error dialog
       }
     }
 
