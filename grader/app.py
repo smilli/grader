@@ -34,8 +34,13 @@ def main():
 @app.route('/assignments/<int:ans_id>', methods=['POST'])
 def get_assignments(ans_id):
     if 0 <= ans_id < assignment.num_answers():
-        answer = assignment.get_answer(ans_id)
-        return json.dumps([create_word(word) for word in word_tokenize(answer)])
+        if assignment.is_graded(ans_id):
+            return json.dumps({'graded': True, 'assignment':
+                assignment.get_graded(ans_id)})
+        else:
+            answer = assignment.get_answer(ans_id)
+            return json.dumps({'graded': False, 'assignment': 
+                    [create_word(word) for word in word_tokenize(answer)]})
     return 'false'
 
 
@@ -56,6 +61,7 @@ def grade_assignment(ans_id):
                 else:
                     corrections.append(w['correction'])
         spellchecker.grade(words, corrections, teacher_corrected_list)
+        assignment.add_graded(ans_id, answer)
         return 'true'
     return 'false'
 

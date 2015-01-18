@@ -1,8 +1,8 @@
 app.controller('GraderController', ['$scope', 'server', function($scope, server) {
-    $scope.assignmentId = 0
-    $scope.graded = {} // dict with ids that have been graded already
+    $scope.assignmentId = 0;
     server.getAssignment($scope.assignmentId).then(function(assignment) {
-      $scope.assignment = assignment;
+      $scope.assignment = assignment.assignment;
+      $scope.graded = assignment.graded;
     });
     server.getNumAssignments().then(function(resp) {
       $scope.numAssignments = parseInt(resp.data, 10);
@@ -40,22 +40,17 @@ app.controller('GraderController', ['$scope', 'server', function($scope, server)
     }
 
     $scope.gradeAssignment = function() {
-      if (!($scope.assignmentId in $scope.graded)) {
-        $scope.graded[$scope.assignmentId] = true;
-        server.gradeAssignment($scope.assignmentId, $scope.assignment);
-        $scope.updateAssignment($scope.assignmentId + 1);
-      } else {
-        // TODO(smilli): show error dialog
-      }
+      $scope.graded = true;
+      server.gradeAssignment($scope.assignmentId, $scope.assignment);
+      $scope.updateAssignment($scope.assignmentId + 1);
     }
 
     $scope.updateAssignment = function(id) {
       if (id >= 0 && id < $scope.numAssignments) {
         $scope.assignmentId = id;
         server.getAssignment(id).then(function(assignment) {
-          // TODO(smilli): make sure you get an assignment back
-          // actually just add len of assignments to scope
-          $scope.assignment = assignment;
+          $scope.assignment = assignment.assignment;
+          $scope.graded = assignment.graded;
         });
         $scope.focusGradeBox = false;
         $scope.word = null;
